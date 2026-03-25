@@ -3,6 +3,7 @@ package com.example.lecturemanager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
@@ -21,10 +22,15 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Set up the Toolbar as the ActionBar
+        setSupportActionBar(binding.toolbar)
+
         val navView: BottomNavigationView = binding.navView
 
-        // Setup Navigation Component
-        val navController = findNavController(R.id.nav_host_fragment_activity_main)
+        // Use NavHostFragment to get the NavController (safer than findNavController)
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.nav_host_fragment_activity_main) as NavHostFragment
+        val navController = navHostFragment.navController
         
         // Define top-level destinations (no back button on these)
         val appBarConfiguration = AppBarConfiguration(
