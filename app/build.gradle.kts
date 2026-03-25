@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.hilt.android)
-    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.ksp)
     // alias(libs.plugins.google.services) // Temporarily disabled until google-services.json is added
 }
 
@@ -18,12 +18,6 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments += mapOf("room.schemaLocation" to "$projectDir/schemas")
-            }
-        }
     }
 
     buildTypes {
@@ -58,7 +52,7 @@ dependencies {
     
     // Hilt
     implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
 
     // Retrofit & OkHttp
     implementation(libs.retrofit)
@@ -68,7 +62,7 @@ dependencies {
     // Room
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
-    kapt(libs.room.compiler)
+    ksp(libs.room.compiler)
 
     // Lifecycle
     implementation(libs.lifecycle.viewmodel.ktx)
@@ -91,7 +85,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 }
 
-// Allow references to generated code
-kapt {
-    correctErrorTypes = true
+// Room schema export directory
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
 }

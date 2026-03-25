@@ -1,5 +1,6 @@
 package com.example.lecturemanager.di
 
+import com.example.lecturemanager.data.remote.api.LecManApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -38,5 +39,11 @@ object NetworkModule {
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideLecManApi(retrofit: Retrofit): LecManApi {
+        return retrofit.create(LecManApi::class.java)
     }
 }
