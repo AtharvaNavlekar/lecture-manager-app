@@ -13,3 +13,7 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Local proxy env file (contains credentials)
+.env
+proxy-config.json
