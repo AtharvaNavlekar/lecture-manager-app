@@ -15,6 +15,7 @@ class SessionManager @Inject constructor(@ApplicationContext context: Context) {
         private const val USER_TOKEN = "user_token"
         private const val USER_ROLE = "user_role"
         private const val USER_ID = "user_id"
+        private const val USER_NAME = "user_name"
     }
 
     fun saveAuthToken(token: String) {
@@ -39,6 +40,14 @@ class SessionManager @Inject constructor(@ApplicationContext context: Context) {
 
     fun fetchUserId(): String? {
         return prefs.getString(USER_ID, null)
+    }
+
+    fun saveUserName(name: String) {
+        prefs.edit { putString(USER_NAME, name) }
+    }
+
+    fun fetchUserName(): String? {
+        return prefs.getString(USER_NAME, null)
     }
 
     fun clearSession() {

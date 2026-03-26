@@ -2,8 +2,8 @@ package com.example.lecturemanager.ui.requests
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.lecturemanager.data.remote.api.LecManApi
 import com.example.lecturemanager.data.remote.dto.SubstituteRequest
+import com.example.lecturemanager.data.repository.SubstituteRepository
 import com.example.lecturemanager.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -20,7 +20,7 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class SubstituteViewModel @Inject constructor(
-    private val api: LecManApi
+    private val repository: SubstituteRepository
 ) : ViewModel() {
 
     // --- Pending Substitute Requests ---
@@ -48,16 +48,7 @@ class SubstituteViewModel @Inject constructor(
     fun fetchPendingRequests() {
         viewModelScope.launch {
             _substituteRequests.value = Resource.Loading()
-            try {
-                val response = api.getPendingSubstituteRequests()
-                if (response.isSuccessful) {
-                    _substituteRequests.value = Resource.Success(response.body() ?: emptyList())
-                } else {
-                    _substituteRequests.value = Resource.Error("Failed: ${response.code()}")
-                }
-            } catch (e: Exception) {
-                _substituteRequests.value = Resource.Error(e.localizedMessage ?: "Network error")
-            }
+            _substituteRequests.value = repository.getPendingRequests()
         }
     }
 
@@ -95,17 +86,9 @@ class SubstituteViewModel @Inject constructor(
         val request = _activeRequest.value ?: return
         viewModelScope.launch {
             _actionResult.value = Resource.Loading()
-            try {
-                val response = api.acceptSubstituteRequest(request.id)
-                if (response.isSuccessful) {
-                    countdownJob?.cancel()
-                    _actionResult.value = Resource.Success("Accepted successfully")
-                } else {
-                    _actionResult.value = Resource.Error("Failed: ${response.code()}")
-                }
-            } catch (e: Exception) {
-                _actionResult.value = Resource.Error(e.localizedMessage ?: "Network error")
-            }
+            val result = repository.acceptRequest(request.id)
+            if (result is Resource.Success) countdownJob?.cancel()
+            _actionResult.value = result
         }
     }
 
@@ -113,17 +96,9 @@ class SubstituteViewModel @Inject constructor(
         val request = _activeRequest.value ?: return
         viewModelScope.launch {
             _actionResult.value = Resource.Loading()
-            try {
-                val response = api.declineSubstituteRequest(request.id)
-                if (response.isSuccessful) {
-                    countdownJob?.cancel()
-                    _actionResult.value = Resource.Success("Declined")
-                } else {
-                    _actionResult.value = Resource.Error("Failed: ${response.code()}")
-                }
-            } catch (e: Exception) {
-                _actionResult.value = Resource.Error(e.localizedMessage ?: "Network error")
-            }
+            val result = repository.declineRequest(request.id)
+            if (result is Resource.Success) countdownJob?.cancel()
+            _actionResult.value = result
         }
     }
 
